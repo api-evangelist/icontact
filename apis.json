@@ -1,0 +1,95 @@
+{
+    "name": "iContact",
+    "description": "iContact provides an email marketing solution that's instant and easy. Start seeing ROI and send emails today!",
+    "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/215-icontact.jpg",
+    "tags": [
+        "api provider",
+        "contacts",
+        "crm",
+        "email marketing",
+        "have api"
+    ],
+    "created": "2019-12-19",
+    "modified": "2019-12-19",
+    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/icontact\/master\/apis.json",
+    "specificationVersion": "0.14",
+    "apis": [
+        {
+            "name": "iContact",
+            "description": null,
+            "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/215-icontact.jpg",
+            "humanURL": "http:\/\/developer.icontact.com\/",
+            "baseURL": "",
+            "tags": [],
+            "properties": [
+                {
+                    "type": "x-openapi",
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/1forge\/master\/icontact-openapi.json"
+                }
+            ]
+        }
+    ],
+    "include": [],
+    "x-common": [
+        {
+            "type": "Base",
+            "url": "https:\/\/app.icontact.com\/icp\/)"
+        },
+        {
+            "type": "Blog",
+            "url": "http:\/\/icontact.com\/blog"
+        },
+        {
+            "type": "Blog RSS",
+            "url": "http:\/\/feeds.feedburner.com\/icontact\/blog"
+        },
+        {
+            "type": "Crunchbase",
+            "url": "https:\/\/crunchbase.com\/organization\/icontact"
+        },
+        {
+            "type": "Crunchbase",
+            "url": "http:\/\/www.crunchbase.com\/company\/icontact"
+        },
+        {
+            "type": "Email",
+            "url": "sales@icontact.com"
+        },
+        {
+            "type": "Email",
+            "url": "media@icontact.com"
+        },
+        {
+            "type": "Email",
+            "url": "abuse@icontact.com"
+        },
+        {
+            "type": "Email",
+            "url": "customercare@icontact.com"
+        },
+        {
+            "type": "Email",
+            "url": "deliverability@icontact.com"
+        },
+        {
+            "type": "Email",
+            "url": "legaldept@icontact.com"
+        },
+        {
+            "type": "Github",
+            "url": "https:\/\/github.com\/icontact"
+        },
+        {
+            "type": "Pricing",
+            "url": "https:\/\/www.icontact.com\/pricing"
+        },
+        {
+            "type": "Twitter",
+            "url": "https:\/\/twitter.com\/#!\/iContact"
+        },
+        {
+            "type": "Website",
+            "url": "http:\/\/developer.icontact.com\/"
+        }
+    ]
+}
