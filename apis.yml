@@ -1,0 +1,60 @@
+aid: icontact
+name: iContact
+description: >-
+  iContact is an email marketing and marketing automation platform (now
+  part of Cision) that helps small and mid-market businesses build email
+  campaigns, manage contacts and lists, automate drip sequences, and
+  measure engagement. The iContact REST API v2.2 provides programmatic
+  access to contacts, lists, segments, campaigns, messages, and reporting
+  data using a combination of HTTP headers (API-AppId, API-Version,
+  API-Username, API-Password) for authentication.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Email Marketing
+  - Marketing Automation
+  - Campaigns
+  - Contacts
+  - Lists
+  - SMB
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/icontact/refs/heads/main/apis.yml
+created: '2026-05-11'
+modified: '2026-05-11'
+specificationVersion: '0.19'
+apis:
+  - aid: icontact:rest-api
+    name: iContact REST API
+    description: >-
+      REST API v2.2 for managing contacts, lists, segments, campaigns,
+      messages, sends, and reporting inside the iContact email marketing
+      platform. Authentication uses custom HTTP headers including
+      API-AppId, API-Version, API-Username, and API-Password.
+    humanURL: https://www.icontact.com/developerportal
+    baseURL: https://app.icontact.com/icp/
+    tags:
+      - Email Marketing
+      - Campaigns
+      - Contacts
+      - Lists
+      - Messages
+    properties:
+      - type: Documentation
+        url: https://www.icontact.com/developerportal/documentation/
+      - type: API Tracker Profile
+        url: https://apitracker.io/a/icontact
+
+common:
+  - type: Website
+    url: https://www.icontact.com
+  - type: Documentation
+    url: https://www.icontact.com/developerportal/documentation/
+  - type: Pricing
+    url: https://www.icontact.com/pricing
+  - type: Sign Up
+    url: https://app.icontact.com/icp/signup
+  - type: Parent Company
+    url: https://www.cision.com
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
