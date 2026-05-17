@@ -51,7 +51,7 @@ common:
     url: https://www.icontact.com/developerportal/documentation/
   - type: Pricing
     url: https://www.icontact.com/pricing
-  - type: Sign Up
+  - type: SignUp
     url: https://app.icontact.com/icp/signup
   - type: Parent Company
     url: https://www.cision.com
