@@ -45,6 +45,10 @@ apis:
         url: https://apitracker.io/a/icontact
 
 common:
+  - type: GitHubOrganization
+    url: https://github.com/icontact
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/icontact
   - type: Website
     url: https://www.icontact.com
   - type: Documentation
