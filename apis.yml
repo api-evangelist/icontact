@@ -45,6 +45,8 @@ apis:
         url: https://apitracker.io/a/icontact
 
 common:
+  - type: DomainSecurity
+    url: security/icontact-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/icontact
   - type: LinkedIn
@@ -59,6 +61,8 @@ common:
     url: https://app.icontact.com/icp/signup
   - type: Parent Company
     url: https://www.cision.com
+  - url: https://www.icontact.com/feed
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
