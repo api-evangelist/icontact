@@ -27,11 +27,14 @@ tags:
   - Campaigns
   - Contacts
   - Lists
+  - Segments
+  - Webhooks
+  - Email Deliverability
   - SMB
 url: >-
   https://raw.githubusercontent.com/api-evangelist/icontact/refs/heads/main/apis.yml
 created: '2026-05-11'
-modified: '2026-05-11'
+modified: '2026-08-13'
 specificationVersion: '0.19'
 apis:
   - aid: icontact:rest-api
@@ -41,7 +44,7 @@ apis:
       messages, sends, and reporting inside the iContact email marketing
       platform. Authentication uses custom HTTP headers including
       API-AppId, API-Version, API-Username, and API-Password.
-    humanURL: https://www.icontact.com/developerportal
+    humanURL: https://help.icontact.com/customers/s/article/API-Developer-Portal
     baseURL: https://app.icontact.com/icp/
     tags:
       - Email Marketing
@@ -49,9 +52,46 @@ apis:
       - Contacts
       - Lists
       - Messages
+      - Webhooks
+      - Segments
     properties:
+      - type: DeveloperPortal
+        url: https://help.icontact.com/customers/s/article/API-Developer-Portal
       - type: Documentation
-        url: https://www.icontact.com/developerportal/documentation/
+        url: https://help.icontact.com/customers/s/article/Documentation-iContact-API
+      - type: APIReference
+        url: >-
+          https://help.icontact.com/customers/s/article/Resource-Call-References-List-iContact-API
+      - type: GettingStarted
+        url: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+      - type: Authentication
+        url: authentication/icontact-authentication.yml
+      - type: Conventions
+        url: conventions/icontact-conventions.yml
+      - type: ErrorCatalog
+        url: errors/icontact-problem-types.yml
+      - type: DataModel
+        url: data-model/icontact-data-model.yml
+      - type: Lifecycle
+        url: lifecycle/icontact-lifecycle.yml
+      - type: StatusPage
+        url: https://status.icontact.com/
+      - type: ChangeLog
+        url: changelog/icontact-changelog.yml
+      - type: RateLimits
+        url: rate-limits/icontact-rate-limits.yml
+      - type: Sandbox
+        url: sandbox/icontact-sandbox.yml
+      - type: Conformance
+        url: conformance/icontact-conformance.yml
+      - type: Webhooks
+        url: asyncapi/icontact-webhooks.yml
+      - type: AsyncAPI
+        url: asyncapi/icontact-webhooks-asyncapi.yml
+      - type: MCPServer
+        url: mcp/icontact-mcp.yml
+      - type: Components
+        url: components/icontact-components.yml
       - type: API Tracker Profile
         url: https://apitracker.io/a/icontact
 
@@ -64,16 +104,55 @@ common:
     url: https://www.linkedin.com/company/icontact
   - type: Website
     url: https://www.icontact.com
+  - type: DeveloperPortal
+    url: https://help.icontact.com/customers/s/article/API-Developer-Portal
   - type: Documentation
-    url: https://www.icontact.com/developerportal/documentation/
+    url: https://help.icontact.com/customers/s/article/Documentation-iContact-API
+  - type: APIReference
+    url: >-
+      https://help.icontact.com/customers/s/article/Resource-Call-References-List-iContact-API
+  - type: GettingStarted
+    url: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+  - type: HelpCenter
+    url: https://help.icontact.com/customers/s/
+  - type: Support
+    url: https://www.icontact.com/contact/
   - type: Pricing
-    url: https://www.icontact.com/pricing
+    url: https://www.icontact.com/pricing/
+  - type: Plans
+    url: plans/icontact-plans-pricing.yml
   - type: Signup
-    url: https://app.icontact.com/icp/signup
+    url: https://www.icontact.com/signup/
+  - type: Login
+    url: https://www.icontact.com/login/
+  - type: TermsOfService
+    url: https://www.icontact.com/legal/terms-conditions/
+  - type: PrivacyPolicy
+    url: https://www.icontact.com/legal/privacy/
+  - type: StatusPage
+    url: https://status.icontact.com/
+  - type: Packages
+    url: packages/icontact-packages.yml
+  - type: SDKs
+    url: packages/icontact-packages.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: LLMsTxt
+    url: llms/icontact-llms.txt
+  - type: Integrations
+    url: https://www.icontact.com/features/email-marketing-integrations/
   - type: Parent Company
     url: https://www.cision.com
   - url: https://www.icontact.com/feed
     type: Blog
+  - type: BlogRSS
+    url: https://www.icontact.com/resources/blog/feed/
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+
+x-enrichment:
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 22
+  pass: local-v1
