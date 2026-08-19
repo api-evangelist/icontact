@@ -1,0 +1,216 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://help.icontact.com/customers/s/article/API-Developer-Portal and the
+  linked reference articles; https://www.icontact.com/legal/
+name: iContact standards and compliance conformance
+api: icontact:rest-api
+summary: >-
+  iContact conforms to almost no cross-cutting API standard. It predates most
+  of them and has not been modernised: authentication is a bespoke triple-header
+  scheme rather than OAuth, errors are prose strings rather than RFC 9457,
+  there is no OpenAPI, no idempotency, no RFC 8594 deprecation signalling and
+  no /.well-known surface. What it does conform to is the older, simpler set —
+  HTTPS everywhere, correct HTTP status code semantics, ISO 8601 timestamps and
+  a coherent limit/offset pagination contract — plus the email-specific legal
+  regimes its product must satisfy.
+
+standards:
+  - id: https
+    name: TLS-only transport
+    conforms: true
+    evidence: >-
+      "Every request must be sent over HTTPS." Probed 2026-08-13:
+      https://app.icontact.com/icp/time returns
+      strict-transport-security: max-age=15552000; includeSubDomains.
+    source: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+
+  - id: http-status-semantics
+    name: Correct HTTP status code usage
+    conforms: true
+    evidence: >-
+      A dedicated status code reference documents 200/400/401/402/403/404/405/
+      406/415/500/501/503/507 with correct semantics, including the rarely-used
+      402 and 507.
+    source: https://help.icontact.com/customers/s/article/HTTP-Status-Codes-iContact-API
+
+  - id: iso8601
+    name: ISO 8601 timestamps
+    conforms: true
+    evidence: >-
+      "The format of timestamps is ISO8601: YYYY-MM-DD[THH:MM:SS[Timezone
+      Offset]." Confirmed on the live public /icp/time response.
+    source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+
+  - id: pagination
+    name: Documented pagination contract
+    conforms: true
+    evidence: >-
+      limit/offset query parameters with a documented default of 20, and
+      limit/offset/total returned in every collection response body.
+    caveat: >-
+      No Link header, no cursor, no published maximum limit. The undocumented
+      silent default of 20 is the main hazard.
+    source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+
+  - id: content-negotiation
+    name: Accept/Content-Type negotiation
+    conforms: true
+    evidence: >-
+      application/json and text/xml are both first-class, with 406 and 415
+      returned correctly for unsupported values.
+
+  - id: openapi
+    name: OpenAPI / Swagger
+    conforms: false
+    evidence: >-
+      No specification is published. Probed 2026-08-13 on every known host:
+      www.icontact.com/openapi.json 404, app.icontact.com/openapi.json 404,
+      app.icontact.com/icp/openapi.json 200 but redirects to the login page
+      (soft-200, not a spec). No spec in the iContact GitHub organisation
+      (3 repos, PHP source only). No Swagger UI, Redoc or API console anywhere
+      in the reference.
+
+  - id: rfc9457
+    name: RFC 9457 Problem Details for HTTP APIs
+    conforms: false
+    evidence: >-
+      Errors are returned as {"errors":["prose string"]} with content-type
+      application/json. No application/problem+json, no type URI, no
+      machine-readable code.
+    detail: errors/icontact-problem-types.yml
+
+  - id: idempotency
+    name: Idempotency keys for safe retry
+    conforms: false
+    evidence: >-
+      No idempotency header, no request-replay window, no deduplication
+      behaviour is documented anywhere in the reference. Verified against all
+      22 resource articles on 2026-08-13.
+
+  - id: oauth2
+    name: OAuth 2.0
+    conforms: false
+    evidence: >-
+      Authentication is three custom headers (API-AppId, API-Username,
+      API-Password). No authorization server, no token endpoint, no scopes.
+      /.well-known/oauth-authorization-server returns 404 on every host.
+
+  - id: oidc
+    name: OpenID Connect
+    conforms: false
+    evidence: '/.well-known/openid-configuration returns 404 on every host.'
+
+  - id: rfc8594
+    name: RFC 8594 Sunset header / deprecation signalling
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation response header and no deprecation policy is
+      published, despite three API versions being simultaneously selectable.
+    detail: lifecycle/icontact-lifecycle.yml
+
+  - id: rfc9116
+    name: RFC 9116 security.txt
+    conforms: false
+    evidence: '/.well-known/security.txt returns 404 on www and app hosts, 401 on help.'
+    detail: well-known/icontact-well-known.yml
+
+  - id: rfc8615
+    name: RFC 8615 well-known URIs
+    conforms: false
+    evidence: 'Every /.well-known path probed returns 404 or 401. No document is served.'
+
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: false
+    evidence: >-
+      A real webhook surface exists and is documented in prose, but no
+      AsyncAPI, CloudEvents or event-schema document is published.
+    note: >-
+      asyncapi/icontact-webhooks-asyncapi.yml in this repo is API Evangelist's
+      derivation, not a provider artifact.
+
+  - id: webhook-signature
+    name: Signed webhook callbacks
+    conforms: false
+    evidence: >-
+      No HMAC signature, shared secret or signing header is documented for
+      webhook callbacks; a receiver cannot verify origin.
+
+  - id: jsonapi
+    name: 'JSON:API'
+    conforms: false
+    evidence: >-
+      Responses are bare resource envelopes with sibling limit/offset/total.
+      No data/attributes/relationships structure, no media type.
+
+  - id: hateoas
+    name: Hypermedia links
+    conforms: false
+    evidence: >-
+      No self URI, link relation or embedded resource. Every relationship must
+      be resolved by constructing a URI from an integer id.
+
+  - id: mcp
+    name: Model Context Protocol
+    conforms: false
+    evidence: >-
+      No MCP server. Probed four candidate endpoints and the official MCP
+      registry on 2026-08-13; all negative.
+    detail: mcp/icontact-mcp.yml
+
+  - id: a2a
+    name: A2A agent card
+    conforms: false
+    evidence: >-
+      /.well-known/agent-card.json and /.well-known/agent.json return 404 on
+      every host.
+
+  - id: llmstxt
+    name: llms.txt
+    conforms: false
+    evidence: >-
+      https://www.icontact.com/llms.txt returns 404;
+      https://help.icontact.com/llms.txt returns 401. robots.txt instead
+      carries an explicit "User-agent: GPTBot / Disallow: /" block.
+
+compliance:
+  note: >-
+    iContact publishes no named security certification. Searched
+    /legal/, /legal/terms-conditions/, /legal/privacy/,
+    /data-processing-schedule/, /understanding-gdpr/ and
+    /legal/anti-spam-policy/ on 2026-08-13: no SOC 2, ISO 27001, PCI DSS,
+    HIPAA, FedRAMP or Data Privacy Framework claim appears on any of them,
+    and there is no trust centre. What is published is the email-marketing
+    legal regime, which is product compliance rather than a security
+    attestation. No `Compliance` pointer is emitted on the strength of this.
+  regimes:
+    - id: gdpr
+      conforms: claimed
+      evidence: >-
+        A published GDPR explainer plus a data processing schedule, and a
+        OneTrust privacy portal for data subject requests.
+      source: https://www.icontact.com/understanding-gdpr/
+      dsar_portal: https://privacyportal.onetrust.com/
+    - id: can-spam
+      conforms: claimed
+      evidence: >-
+        Anti-spam policy and a permission-based sending model; the API models
+        donotcontact and unsubscribe as first-class contact states.
+      source: https://www.icontact.com/legal/anti-spam-policy/
+    - id: casl
+      conforms: claimed
+      evidence: 'A CASL section is published on the anti-spam policy page.'
+      source: https://www.icontact.com/legal/anti-spam-policy/#casl
+  certifications: []
+  trust_center: null
+  vulnerability_disclosure: null
+  vulnerability_disclosure_note: >-
+    Probed 2026-08-13 with the pipeline's security-programs prober: no
+    security.txt, no HackerOne/Bugcrowd/Intigriti programme, no published
+    disclosure policy. Result: vdp=none trust=none.
+
+conformance_score:
+  standards_evaluated: 20
+  conforms: 5
+  does_not_conform: 15

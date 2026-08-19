@@ -1,0 +1,256 @@
+asyncapi: 3.0.0
+info:
+  title: iContact Webhooks
+  version: '2.2'
+  description: >-
+    Derived AsyncAPI description of the four contact-lifecycle webhook events
+    iContact documents at
+    https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API.
+
+
+    NOT A PROVIDER ARTIFACT. iContact publishes no AsyncAPI. This document was
+    derived by API Evangelist on 2026-08-13 from iContact's own published
+    webhook reference and its contact and list field tables. Every event id,
+    field name and payload shape below appears verbatim in iContact's
+    documentation; nothing has been invented. Where iContact documents nothing
+    — signature verification, retry policy, delivery guarantees, expected
+    receiver response — this document is silent rather than filled in.
+
+
+    Subscriptions are managed through the REST API, not through this document:
+    POST /a/{accountId}/c/{clientFolderId}/webhooks with an eventId and a url.
+  contact:
+    name: iContact API Developer Portal
+    url: https://help.icontact.com/customers/s/article/API-Developer-Portal
+  externalDocs:
+    url: https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API
+defaultContentType: application/json
+
+servers:
+  subscriber:
+    host: 'www.yourhost.com'
+    protocol: https
+    description: >-
+      The consumer-supplied endpoint registered in the webhook `url` field.
+      iContact POSTs event batches to it. The host is chosen by the subscriber;
+      the value here is the placeholder used in iContact's own example.
+
+channels:
+  contactEvents:
+    address: '/'
+    title: Subscriber webhook endpoint
+    description: >-
+      iContact POSTs a JSON array of event objects to the registered url. One
+      registration carries one eventId, so a receiver may be registered several
+      times at different paths to separate event types.
+    messages:
+      contactCreated:
+        $ref: '#/components/messages/contactCreated'
+      contactUpdated:
+        $ref: '#/components/messages/contactUpdated'
+      contactSubscribed:
+        $ref: '#/components/messages/contactSubscribed'
+      contactUnsubscribed:
+        $ref: '#/components/messages/contactUnsubscribed'
+
+operations:
+  receiveContactCreated:
+    action: receive
+    channel:
+      $ref: '#/channels/contactEvents'
+    summary: When a new contact is created.
+    messages:
+      - $ref: '#/channels/contactEvents/messages/contactCreated'
+  receiveContactUpdated:
+    action: receive
+    channel:
+      $ref: '#/channels/contactEvents'
+    summary: When an existing contact is modified.
+    messages:
+      - $ref: '#/channels/contactEvents/messages/contactUpdated'
+  receiveContactSubscribed:
+    action: receive
+    channel:
+      $ref: '#/channels/contactEvents'
+    summary: When a contact is subscribed to a list.
+    messages:
+      - $ref: '#/channels/contactEvents/messages/contactSubscribed'
+  receiveContactUnsubscribed:
+    action: receive
+    channel:
+      $ref: '#/channels/contactEvents'
+    summary: When a contact is unsubscribed from a list.
+    messages:
+      - $ref: '#/channels/contactEvents/messages/contactUnsubscribed'
+
+components:
+  messages:
+    contactCreated:
+      name: contact_created
+      title: contact_created
+      summary: When a new contact is created.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContactEventBatch'
+    contactUpdated:
+      name: contact_updated
+      title: contact_updated
+      summary: When an existing contact is modified.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContactEventBatch'
+    contactSubscribed:
+      name: contact_subscribed
+      title: contact_subscribed
+      summary: When a contact is subscribed to a list.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContactListEventBatch'
+    contactUnsubscribed:
+      name: contact_unsubscribed
+      title: contact_unsubscribed
+      summary: When a contact is unsubscribed from a list.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ContactListEventBatch'
+
+  schemas:
+    ContactEventBatch:
+      type: array
+      description: 'Documented payload shape: [{"contact": {contact_data}}]'
+      items:
+        type: object
+        required: [contact]
+        properties:
+          contact:
+            $ref: '#/components/schemas/Contact'
+
+    ContactListEventBatch:
+      type: array
+      description: >-
+        Documented payload shape:
+        [{"contact": {contact_data}, "list": {list_data}}]
+      items:
+        type: object
+        required: [contact, list]
+        properties:
+          contact:
+            $ref: '#/components/schemas/Contact'
+          list:
+            $ref: '#/components/schemas/List'
+
+    Contact:
+      type: object
+      description: >-
+        "The data format will be the same as the data format for the object on
+        the public API." Fields below are transcribed from the contacts
+        resource reference.
+      externalDocs:
+        url: https://help.icontact.com/customers/s/article/Contacts-iContact-API
+      properties:
+        contactId:
+          type: integer
+          description: Unique identifier for a single contact.
+          examples: [349]
+        email:
+          type: string
+          format: email
+          description: The contact's email address. Must be unique.
+          examples: ['smith@icontact.com']
+        prefix:
+          type: string
+          description: The contact's salutation.
+          examples: ['Miss']
+        firstName:
+          type: string
+          examples: ['Mary']
+        lastName:
+          type: string
+          examples: ['Smith']
+        suffix:
+          type: string
+          description: The contact's name qualifications.
+          examples: ['III']
+        street:
+          type: string
+        street2:
+          type: string
+        city:
+          type: string
+          examples: ['Durham']
+        state:
+          type: string
+          maxLength: 10
+          examples: ['NC']
+        postalCode:
+          type: string
+          examples: ['27713']
+        phone:
+          type: string
+        fax:
+          type: string
+        business:
+          type: string
+          description: The contact's business phone number.
+        status:
+          type: string
+          description: Subscription status of the contact.
+          enum: [normal, bounced, donotcontact, pending, invitable, deleted]
+        createDate:
+          type: string
+          description: >-
+            Date the contact was added to iContact. ISO 8601 per the API's
+            timestamp convention.
+          examples: ['2009-06-18 22:39:54']
+        bounceCount:
+          type: integer
+          description: Number of times emails sent to this contact have bounced.
+          examples: [3]
+
+    List:
+      type: object
+      description: Fields transcribed from the lists resource reference.
+      externalDocs:
+        url: https://help.icontact.com/customers/s/article/Lists-iContact-API
+      properties:
+        listId:
+          type: integer
+          description: Unique identifier for the list.
+          examples: [375628]
+        name:
+          type: string
+          description: The name for the list.
+          examples: ['My contacts']
+        description:
+          type: string
+          description: Describes the list. Not visible to contacts on the list.
+        publicname:
+          type: string
+          description: Publicly facing name for a list, visible to contacts.
+          examples: ['Bakery Newsletter']
+        emailOwnerOnChange:
+          type: integer
+          enum: [0, 1]
+          default: 1
+          description: >-
+            Whether the list owner is emailed when a subscriber is added or
+            removed.
+
+x-provenance:
+  generated: '2026-08-13'
+  method: derived
+  source: https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API
+  derived_by: API Evangelist enrichment pipeline
+  provider_published: false
+x-undocumented:
+  note: >-
+    iContact documents none of the following, so this description asserts
+    none of them.
+  items:
+    - signature or shared-secret verification of the callback
+    - retry, backoff or dead-letter behaviour on receiver failure
+    - the status code a receiver is expected to return
+    - delivery or ordering guarantees
+    - an event id or timestamp inside the payload
+    - any message-level event (send, delivery, bounce, open, click, complaint)
+    - '"Do Not Contact" events, which iContact explicitly states are unavailable'

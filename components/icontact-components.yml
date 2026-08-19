@@ -1,0 +1,61 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/Sign-Up-Forms-iContact-API
+docs:
+  - https://help.icontact.com/customers/s/article/Sign-Up-Forms-iContact-API
+  - https://www.icontact.com/features/email-list-management-and-growth-tools/
+name: iContact embeddable components
+api: icontact:rest-api
+component_count: 1
+summary: >-
+  iContact ships one client-side embeddable surface: a hosted sign-up form
+  loader. It is not a component library — there are no web components, no
+  element SDK and no embedded dashboard. The form is designed in the iContact
+  UI, and the API's role is read-only: it hands back the ready-made embed
+  snippet so an integrator can place a form it did not build.
+families:
+  - name: Sign-Up Forms
+    kind: hosted-embed
+    delivery: async script tag injected into a wrapper div
+    loader_host: app.icontact.com
+    loader_url_template: >-
+      https://app.icontact.com/icp/core/mycontacts/signup/designer/form/automatic?id={formId}&cid={clientFolderId}&lid={listId}&divid=icontactSignupFormWrapper{formId}
+    embed_shape: >-
+      <div id="icontactSignupFormWrapper{formId}"><script type="text/javascript"
+      async src="{loader_url}"></script></div>
+    retrieved_via:
+      method: GET
+      uri: 'https://app.icontact.com/icp/a/{accountId}/c/{clientFolderId}/signupforms/{signupformsId}'
+      field: automaticHTML
+      note: >-
+        The API returns the complete embed snippet in the automaticHTML field.
+        There is no create, update or delete — the signupforms resource is
+        GET-only, so forms must be authored in the iContact web app.
+    fields_returned: [formId, created, updated, name, confirmationMessageId, automaticHTML, lists]
+    versioning:
+      pinned: false
+      version: null
+      version_note: >-
+        The loader URL carries no version segment and no integrity hash. It
+        floats to whatever iContact serves, so an embedder cannot tell what
+        code is running on their page today versus yesterday. Recorded as
+        unpinned rather than as a version.
+    styling_api: null
+    events_api: null
+    csp_note: >-
+      Embedding requires allowing an async third-party script from
+      app.icontact.com in the host page's content security policy.
+    docs_note: >-
+      The reference article warns that in its code examples the word "script"
+      has been rewritten as "scr1pt" and must be corrected by hand before use.
+not_present:
+  web_components: false
+  element_library: false
+  embedded_dashboard: false
+  hosted_checkout: false
+  react_or_vue_bindings: false
+  design_tokens: false
+  note: >-
+    Searched the developer reference, the features pages and the iContact
+    GitHub organisation (3 public repos, all PHP server-side examples). No
+    client-side component library of any kind is published.

@@ -1,0 +1,159 @@
+generated: '2026-08-13'
+method: searched
+source: https://www.icontact.com/pricing/
+docs: https://www.icontact.com/pricing/
+name: iContact plans and pricing
+currency: USD
+pricing_model: contact-tier
+pricing_note: >-
+  Price is a function of contact-list size, not API usage. There is no API
+  call metering, no per-request price and no developer-specific plan; API
+  access is a feature of the product account. Nine contact tiers are published
+  (500, 1000, 2500, 5000, 10000, 15000, 25000, 35000, 50000). Above 50,000
+  contacts pricing is "Contact Us".
+trial:
+  available: true
+  length_days: 30
+  price: 0
+  credit_card_required: false
+  note: >-
+    The API Getting Started guide explicitly recommends a free production
+    account as the testing vehicle, since the sandbox is no longer offered.
+  signup: https://www.icontact.com/signup/
+billing_periods: [monthly, yearly]
+yearly_discount: '15%'
+plan_count: 3
+plans:
+  - name: Standard
+    monthly_price_by_contacts:
+      '500': 9
+      '1000': 14
+      '2500': 28
+      '5000': 45
+      '10000': 73
+      '15000': 110
+      '25000': 180
+      '35000': 250
+      '50000': 350
+    yearly_price_by_contacts:
+      '500': 92
+      '1000': 143
+      '2500': 286
+      '5000': 459
+      '10000': 745
+      '15000': 1122
+      '25000': 1836
+      '35000': 2550
+      '50000': 3570
+    limits:
+      users: 1
+      contact_lists: 2
+      segments: 1
+      automations: 1
+      landing_pages: 1
+      storage: 250 MB
+      send_limit: 10x contacts
+    features:
+      - Pre-designed email templates
+      - Drag and drop editor
+      - Landing page templates
+      - Automations
+      - A/B testing
+      - Custom fields
+      - Spam checker
+      - Forms
+      - Basic reporting
+      - Email support
+    api_access: true
+    api_note: >-
+      iContact does not gate the REST API by plan on the published pricing
+      comparison; no plan row mentions API access or API call volume.
+  - name: Premium
+    monthly_price_by_contacts:
+      '500': 16
+      '1000': 27
+      '2500': 41
+      '5000': 73
+      '10000': 109
+      '15000': 159
+      '25000': 229
+      '35000': 309
+      '50000': 399
+    yearly_price_by_contacts:
+      '500': 163
+      '1000': 275
+      '2500': 418
+      '5000': 745
+      '10000': 1112
+      '15000': 1622
+      '25000': 2336
+      '35000': 3152
+      '50000': 4070
+    limits:
+      users: unlimited
+      contact_lists: unlimited
+      segments: unlimited
+      automations: unlimited
+      landing_pages: unlimited
+      storage: 500 MB
+      send_limit: 12x contacts
+      ai_content: 20 transcriptions
+    features:
+      - Everything in Standard
+      - Unlimited users
+      - Social media posting
+      - AI content assistant
+      - Subject line AI
+      - Chat support
+      - Phone support
+    api_access: true
+  - name: Ultimate
+    monthly_price_by_contacts:
+      '500': 24
+      '1000': 38
+      '2500': 53
+      '5000': 84
+      '10000': 128
+      '15000': 183
+      '25000': 258
+      '35000': 338
+      '50000': 427
+    yearly_price_by_contacts:
+      '500': 245
+      '1000': 388
+      '2500': 541
+      '5000': 857
+      '10000': 1306
+      '15000': 1867
+      '25000': 2632
+      '35000': 3448
+      '50000': 4355
+    limits:
+      users: unlimited
+      contact_lists: unlimited
+      segments: unlimited
+      automations: unlimited
+      landing_pages: unlimited
+      storage: 1 GB
+      send_limit: 15x contacts
+      ai_content: unlimited
+    features:
+      - All Premium features
+      - Email verification included
+      - Dynamic content
+      - AI templates and images
+    api_access: true
+  - name: Custom / Enterprise
+    price: null
+    price_note: >-
+      "If you need sending at a larger scale, our custom offering provides
+      flexible and personalized plans that can support larger contact lists,
+      greater sending volume, premium support, creative assistance and more."
+      Quoted through sales; no published price.
+    contact: https://www.icontact.com/contact/
+    sales_phone: 1-877-820-7837
+add_ons:
+  - name: Email Verification
+    price_from: 1
+    period: month
+    note: Included at no extra cost on Ultimate.

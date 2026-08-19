@@ -1,0 +1,78 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+docs: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+name: iContact REST API test environment
+api: icontact:rest-api
+sandbox_available: false
+summary: >-
+  iContact no longer offers a sandbox. Its own Getting Started guide, under a
+  heading literally titled "Sandbox Account", instructs developers to create a
+  free production account instead and warns that testing happens against live
+  data.
+provider_guidance:
+  quote: >-
+    "Sandbox Account: We recommend creating a new free production iContact
+    account for testing your integrations and API calls. No credit card is
+    required."
+  production_warning: >-
+    "You can create and test your iContact API Application using a trial, or
+    full account with iContact. Be careful. All changes in contacts, messages,
+    sends or any other resource will modify your live data."
+  signup: https://www.icontact.com/signup/
+  trial_days: 30
+  credit_card_required: false
+test_vs_live:
+  separate_environments: false
+  key_prefixes: false
+  key_prefix_note: >-
+    Credentials are an API-AppId plus a username and an application password;
+    there is no test-mode/live-mode prefix or flag that lets a caller tell which
+    environment a credential targets.
+  mode_header: false
+legacy_sandbox:
+  host: app.sandbox.icontact.com
+  base_url: https://app.sandbox.icontact.com/icp
+  referenced_by: >-
+    Default value of the ICONTACT_APISANDBOXURL constant in iContact's own PHP
+    library, https://github.com/icontact/icontact-api-php (lib/iContactApi.php).
+  probed: '2026-08-13'
+  state: broken
+  evidence:
+    dns: 'Resolves via www2api-lb-300979387.us-east-1.elb.amazonaws.com to 34.193.24.248, 52.2.241.24'
+    tls: 'TLSv1.3 handshake completes, but the certificate presented is C=US, ST=California, O=J2 Global, CN=*.icontact.com — its SAN does not match app.sandbox.icontact.com, so verification fails.'
+    http_status: null
+    curl_exit: 'SSL: no alternative certificate subject name matches target host name'
+  note: >-
+    The host is still standing but cannot be reached over verified TLS. A
+    developer following iContact's own published library default is sent to an
+    endpoint that fails certificate validation.
+test_fixtures:
+  test_cards: null
+  test_accounts: null
+  time_simulation: false
+  triggers: false
+  note: >-
+    Not applicable — iContact is an email marketing API, not a payments API.
+    No fixture, seeding or trigger tooling is published.
+dry_run:
+  supported: false
+  note: >-
+    No dry-run, preview or validate-only mode is documented on any resource.
+    Because the Sends resource dispatches real email to real contacts, an
+    agent has no safe way to rehearse a send.
+safe_read_only_probe:
+  endpoint: GET https://app.icontact.com/icp/time
+  auth_required: false
+  probed: '2026-08-13'
+  http_status: 200
+  note: >-
+    The only unauthenticated, side-effect-free endpoint on the API. Useful as a
+    reachability and clock-skew check, and it is the closest thing to a health
+    check iContact publishes.
+risk:
+  level: high
+  detail: >-
+    With no sandbox, no dry-run and no idempotency key, every integration test
+    against iContact mutates production data, and a retried send cannot be
+    deduplicated.

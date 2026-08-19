@@ -1,0 +1,62 @@
+generated: '2026-08-13'
+method: generated
+source: >-
+  https://help.icontact.com/customers/s/article/Code-Library-iContact-API and
+  the per-resource reference articles it links
+name: iContact Agent Skills
+api: icontact:rest-api
+base_url: https://app.icontact.com/icp
+grounding:
+  spec: null
+  spec_note: >-
+    iContact publishes no OpenAPI, so these skills are grounded in the
+    provider's own published resource reference instead of in a machine-readable
+    contract. Every HTTP method, URI template, required field and enum value
+    cited in these skills is transcribed from a named iContact documentation
+    article, linked from each skill's frontmatter. No operationId, parameter or
+    field has been invented. Because there is no spec, an agent cannot validate
+    a request before sending it — the field tables in these skills are the only
+    schema available.
+  flows_source: >-
+    The flows mirror the tasks iContact itself publishes in its Code Library
+    article, so these are the provider's own marquee integrations, not ones
+    API Evangelist chose.
+provider_published_skills: none
+provider_published_skills_note: >-
+  Searched for a provider-published AGENTS.md, skills manifest or agent
+  instructions on 2026-08-13. None exists. iContact's robots.txt additionally
+  denies GPTBot at the site root.
+skills:
+  - file: icontact-add-contact-to-list.md
+    name: icontact-add-contact-to-list
+    description: >-
+      Create a contact and subscribe it to a list — the two-step flow that
+      trips up most iContact integrations.
+  - file: icontact-create-and-send-message.md
+    name: icontact-create-and-send-message
+    description: >-
+      Compose a message against a campaign and dispatch it to lists or
+      segments. Has irreversible real-world effects.
+  - file: icontact-read-engagement.md
+    name: icontact-read-engagement
+    description: >-
+      Pull opens, clicks, bounces, unsubscribes and aggregate statistics for a
+      sent message.
+  - file: icontact-search-contacts.md
+    name: icontact-search-contacts
+    description: >-
+      Query the contacts collection correctly, including the two defaults that
+      silently under-report.
+safety_summary:
+  - >-
+    POST on a member is a MERGE update; PUT on a member is a DESTRUCTIVE
+    REPLACE that deletes every field not supplied. This inverts what an agent
+    trained on REST convention will assume.
+  - >-
+    There is no sandbox, no dry-run and no idempotency key. Every call mutates
+    production, and no write is safe to retry blindly.
+  - >-
+    GET /contacts silently caps at 20 rows and silently omits contacts not on
+    a list.
+  - >-
+    Creating a send dispatches real email to real people and cannot be undone.

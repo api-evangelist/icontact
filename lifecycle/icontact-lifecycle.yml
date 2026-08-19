@@ -1,0 +1,120 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+docs:
+  - https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+  - https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+name: iContact REST API lifecycle
+api: icontact:rest-api
+
+versioning:
+  scheme: major.minor
+  style: request-header negotiation
+  header: API-Version
+  supported_versions: ['2.0', '2.1', '2.2']
+  current: '2.2'
+  in_url: false
+  unknown_version_behavior: 'HTTP 501 Not Implemented'
+  version_gated_behavior:
+    - operation: 'PUT /a/{accountId}/c/{clientFolderId}/subscriptions/{subscriptionId}'
+      requires: '2.2'
+      description: Move a contact to another list.
+      source: https://help.icontact.com/customers/s/article/Subscriptions-iContact-API
+  note: >-
+    Three versions are simultaneously selectable via a header with no published
+    sunset for 2.0 or 2.1, so an integration pinned to 2.0 has no signal that it
+    should move.
+
+changelog:
+  published: false
+  detail: changelog/icontact-changelog.yml
+  note: >-
+    The Advanced Users article lists "API Version Changelog" in its own table of
+    contents, but the article body ends after "Coding Best Practices" and no
+    changelog section is rendered. Verified 2026-08-13.
+
+deprecation_policy:
+  published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    No deprecation policy, no advance-notice window, and no RFC 8594
+    Sunset/Deprecation response headers are documented anywhere in the
+    developer reference. Retirements below were established by probe, not by a
+    provider announcement.
+
+sla:
+  published: false
+  note: No uptime SLA or availability commitment is published on the public site.
+
+status_page:
+  url: https://status.icontact.com/
+  probed: '2026-08-13'
+  http_status: 200
+  api_component: true
+  api_component_name: API System
+  components:
+    - Website
+    - Delivery Tracking System
+    - Message Archive System
+    - Landing Pages
+    - API System
+    - Email Campaign Sending
+  state_at_probe: All systems operational
+  incident_history: true
+  subscribe: true
+  feeds:
+    - url: https://status.icontact.com/history.rss
+      http_status: 200
+      content_type: text/xml
+  machine_readable_status_api: false
+  machine_readable_note: >-
+    Probed /api/v2/status.json, /api/v2/components.json and /summary.json —
+    all 404. The status page is not an Atlassian Statuspage instance and
+    exposes no JSON status endpoint; only the RSS incident history is
+    machine-readable.
+
+retired_surfaces:
+  note: >-
+    Three additional iContact API surfaces were published historically via
+    first-party GitHub libraries. Two of their hosts no longer answer. Recorded
+    here rather than as apis.yml entries, because an entry pointing at a dead
+    host would assert a surface that no longer exists.
+  items:
+    - name: iContact Pro API
+      base_url: https://api.icpro.co/icp
+      source: https://github.com/icontact/icontact-pro-api-php
+      probed: '2026-08-13'
+      state: dead
+      evidence: 'api.icpro.co has no DNS A record (NXDOMAIN via 8.8.8.8).'
+    - name: iContact Pro Select / OutMarket API
+      base_url: https://api.omkt.co/icp
+      source: https://github.com/icontact/icontact-pro-select-api-php
+      probed: '2026-08-13'
+      state: unreachable
+      evidence: >-
+        api.omkt.co resolves and completes a TLS handshake with a valid
+        *.omkt.co certificate, but the HTTP/2 request never returns (curl exit
+        code 000 at a 40s timeout).
+    - name: iContact API sandbox
+      base_url: https://app.sandbox.icontact.com/icp
+      source: >-
+        Default ICONTACT_APISANDBOXURL constant in
+        https://github.com/icontact/icontact-api-php
+      probed: '2026-08-13'
+      state: broken
+      evidence: >-
+        Host resolves to an AWS ELB but presents a *.icontact.com certificate
+        whose SAN does not cover app.sandbox.icontact.com, so TLS verification
+        fails. iContact's own Getting Started guide now directs testers to a
+        free production account instead.
+      detail: sandbox/icontact-sandbox.yml
+
+operations_maturity:
+  status_page: true
+  incident_history: true
+  changelog: false
+  deprecation_policy: false
+  sla: false
+  machine_readable_spec: false

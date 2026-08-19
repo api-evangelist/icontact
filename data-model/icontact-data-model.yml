@@ -1,0 +1,341 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  https://help.icontact.com/customers/s/article/Resource-Call-References-List-iContact-API
+  and the 22 per-resource reference articles it links
+name: iContact REST API data model
+api: icontact:rest-api
+base_url: https://app.icontact.com/icp
+note: >-
+  Derived from iContact's published resource reference, not from an OpenAPI —
+  iContact publishes none. Every entity, field and relationship below is read
+  off the provider's own field tables and URI templates. Relationships are
+  expressed by id-reference fields and by URI nesting; iContact publishes no
+  $ref graph, no hypermedia links and no expansion parameter, so a client must
+  resolve every relationship by hand with a second call.
+
+id_convention:
+  pattern: '{entity}Id'
+  type: integer
+  prefixes: false
+  prefix_note: >-
+    Ids are bare integers with no type prefix, so an id is not
+    self-describing — 349 could be a contact, a list or a message.
+  rule: >-
+    Primary keys must be supplied on POST-update and PUT, must be omitted on a
+    creation POST, and can never be modified.
+
+tenancy:
+  levels: [account, clientFolder]
+  path_template: '/a/{accountId}/c/{clientFolderId}/…'
+  note: >-
+    Every content entity is scoped to a client folder, which is scoped to an
+    account. Users and permissions hang off the account, not the client folder.
+  discovery:
+    - 'GET /a/ -> accounts'
+    - 'GET /a/{accountId}/c/ -> clientfolders'
+
+entities:
+  - name: account
+    path: '/a/{accountId}'
+    id: accountId
+    docs: https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+    relationships:
+      - has_many: clientFolder
+        via: URI nesting
+      - has_many: user
+        via: URI nesting
+
+  - name: clientFolder
+    path: '/a/{accountId}/c/{clientFolderId}'
+    id: clientFolderId
+    docs: https://help.icontact.com/customers/s/article/Client-Folders-iContact-API
+    methods: [GET, POST, PUT]
+    relationships:
+      - belongs_to: account
+      - has_many: [contact, list, segment, campaign, message, subscription, customField, signupForm, upload, webhook, automation]
+
+  - name: contact
+    path: '/a/{accountId}/c/{clientFolderId}/contacts/{contactId}'
+    id: contactId
+    docs: https://help.icontact.com/customers/s/article/Contacts-iContact-API
+    methods: [GET, POST, PUT, DELETE]
+    required: [email]
+    unique: [email]
+    status_enum: [normal, bounced, donotcontact, pending, invitable, deleted]
+    receive_only: [createDate, bounceCount]
+    relationships:
+      - has_many: subscription
+        via: contactId
+      - has_many: contactAction
+        via: 'URI nesting /contacts/{contactId}/actions'
+      - has_many: customFieldValue
+        via: customFieldId
+    notes:
+      - >-
+        GET on the collection returns ONLY contacts on a list unless
+        ?status=unlisted or ?status=total is passed.
+      - >-
+        Status cannot be changed away from donotcontact, pending or invitable.
+
+  - name: list
+    path: '/a/{accountId}/c/{clientFolderId}/lists/{listId}'
+    id: listId
+    docs: https://help.icontact.com/customers/s/article/Lists-iContact-API
+    methods: [GET, POST, PUT, DELETE]
+    required: [name]
+    optional: [description, publicname, emailOwnerOnChange]
+    relationships:
+      - has_many: subscription
+        via: listId
+      - has_many: contact
+        via: subscription
+        cardinality: many_to_many
+    deprecated_fields:
+      - fields: [welcomeMessageId, welcomeOnManualAdd, welcomeOnSignupAdd]
+        note: >-
+          "Welcome message fields have been deprecated from this resource.
+          Welcome messages have been replaced by Automations." The provider's
+          own first-party PHP library still sends welcomeMessageId as a
+          required argument to addList().
+
+  - name: subscription
+    path: '/a/{accountId}/c/{clientFolderId}/subscriptions/{subscriptionId}'
+    id: subscriptionId
+    id_format: '{listId}_{contactId}'
+    id_note: >-
+      The only composite key in the model. iContact calls this out explicitly:
+      "The primary key is generated from the listId and contactId." Example
+      from the docs: 127465_36528375.
+    docs: https://help.icontact.com/customers/s/article/Subscriptions-iContact-API
+    methods: [GET, POST, PUT]
+    role: join entity
+    required_on_create: [status, listId, contactId]
+    status_enum: [normal, pending, unsubscribed]
+    optional: [confirmationMessageId]
+    receive_only: [addDate]
+    relationships:
+      - belongs_to: contact
+        via: contactId
+      - belongs_to: list
+        via: listId
+    notes:
+      - >-
+        This is the only way to put a contact on a list. Creating a contact
+        does not subscribe it to anything.
+      - 'PUT (move a contact to another list) requires API-Version 2.2.'
+
+  - name: segment
+    path: '/a/{accountId}/c/{clientFolderId}/segments/{segmentId}'
+    id: segmentId
+    docs: https://help.icontact.com/customers/s/article/Segments-iContact-API
+    methods: [GET, POST, DELETE]
+    relationships:
+      - has_many: segmentCriterion
+        via: 'URI nesting /segments/{segmentId}/criteria'
+
+  - name: segmentCriterion
+    path: '/a/{accountId}/c/{clientFolderId}/segments/{segmentId}/criteria/{criterionId}'
+    id: criterionId
+    docs: https://help.icontact.com/customers/s/article/Segment-Criteria-iContact-API
+    methods: [GET, POST, PUT, DELETE]
+    relationships:
+      - belongs_to: segment
+
+  - name: campaign
+    path: '/a/{accountId}/c/{clientFolderId}/campaigns/{campaignId}'
+    id: campaignId
+    docs: https://help.icontact.com/customers/s/article/Campaigns-iContact-API
+    methods: [GET, POST, PUT]
+    relationships:
+      - has_many: message
+        via: campaignId
+
+  - name: message
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}'
+    id: messageId
+    docs: https://help.icontact.com/customers/s/article/Messages-iContact-API
+    methods: [GET, POST]
+    relationships:
+      - belongs_to: campaign
+        via: campaignId
+      - has_many: send
+        via: messageId
+      - has_one: messageStatistics
+        via: 'URI nesting /messages/{messageId}/statistics'
+      - has_many: messageOpen
+        via: 'URI nesting /messages/{messageId}/opens'
+      - has_many: messageClick
+        via: 'URI nesting /messages/{messageId}/clicks'
+      - has_many: messageBounce
+        via: 'URI nesting /messages/{messageId}/bounces'
+      - has_many: messageUnsubscribe
+        via: 'URI nesting /messages/{messageId}/unsubscribes'
+    note: DELETE is documented as not supported — messages cannot be deleted via the API.
+
+  - name: send
+    path: '/a/{accountId}/c/{clientFolderId}/sends'
+    docs: https://help.icontact.com/customers/s/article/Sends-iContact-API
+    methods: [GET, POST]
+    relationships:
+      - belongs_to: message
+        via: messageId
+      - references: list
+        via: 'includeListIds, excludeListIds'
+      - references: segment
+        via: 'includeSegmentIds, excludeSegmentIds'
+    note: >-
+      The only entity in the model with a real-world side effect. Creating a
+      send dispatches email.
+
+  - name: messageStatistics
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}/statistics'
+    docs: https://help.icontact.com/customers/s/article/Statistics-iContact-API
+    methods: [GET]
+    fields: [bounces, delivered, unsubscribes, opens.unique, opens.total, clicks.unique, clicks.total, forwards, comments, complaints]
+    relationships:
+      - belongs_to: message
+
+  - name: messageOpen
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}/opens'
+    docs: https://help.icontact.com/customers/s/article/Message-Opens-iContact-API
+    methods: [GET]
+    relationships:
+      - belongs_to: message
+      - references: contact
+        via: contactId
+
+  - name: messageClick
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}/clicks'
+    docs: https://help.icontact.com/customers/s/article/Message-Clicks-iContact-API
+    methods: [GET]
+    relationships:
+      - belongs_to: message
+
+  - name: messageBounce
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}/bounces'
+    docs: https://help.icontact.com/customers/s/article/Message-Bounces-iContact-API
+    methods: [GET]
+    fields: [contactId, bounceTime]
+    relationships:
+      - belongs_to: message
+      - references: contact
+        via: contactId
+
+  - name: messageUnsubscribe
+    path: '/a/{accountId}/c/{clientFolderId}/messages/{messageId}/unsubscribes'
+    docs: https://help.icontact.com/customers/s/article/Unsubscribes-iContact-API
+    methods: [GET]
+    fields: [contactId, unsubscribeTime]
+    relationships:
+      - belongs_to: message
+      - references: contact
+        via: contactId
+
+  - name: contactAction
+    path: '/a/{accountId}/c/{clientFolderId}/contacts/{contactId}/actions'
+    docs: https://help.icontact.com/customers/s/article/Contact-History-iContact-API
+    methods: [GET]
+    relationships:
+      - belongs_to: contact
+
+  - name: customField
+    path: '/a/{accountId}/c/{clientFolderId}/customfields/{customFieldId}'
+    id: customFieldId
+    docs: https://help.icontact.com/customers/s/article/Custom-Fields-iContact-API
+    methods: [GET, POST, PUT, DELETE]
+    relationships:
+      - extends: contact
+
+  - name: signupForm
+    path: '/a/{accountId}/c/{clientFolderId}/signupforms/{signupformsId}'
+    id: signupformsId
+    docs: https://help.icontact.com/customers/s/article/Sign-Up-Forms-iContact-API
+    methods: [GET]
+    read_only: true
+    fields: [formId, created, updated, name, confirmationMessageId, automaticHTML, lists]
+    relationships:
+      - references: list
+        via: lists
+      - references: message
+        via: confirmationMessageId
+    note: >-
+      Read-only. Returns an automaticHTML embed snippet — see
+      components/icontact-components.yml.
+
+  - name: upload
+    path: '/a/{accountId}/c/{clientFolderId}/uploads/{uploadId}'
+    id: uploadId
+    docs: https://help.icontact.com/customers/s/article/Uploads-iContact-API
+    methods: [GET, POST, PUT, DELETE]
+    accepted_file_types: ['.csv', '.xls', '.xlsx']
+    relationships:
+      - references: list
+        via: listId
+      - creates: contact
+    note: >-
+      Two-step: POST the upload record to the collection, then PUT the file
+      bytes to /uploads/{uploadId}/data.
+
+  - name: webhook
+    path: '/a/{accountId}/c/{clientFolderId}/webhooks/{webhookId}'
+    id: webhookId
+    docs: https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API
+    methods: [GET, POST, DELETE]
+    fields: [webhookId, eventId, url]
+    detail: asyncapi/icontact-webhooks.yml
+
+  - name: automation
+    path: '/a/{accountId}/c/{clientFolderId}/automations/{automationType}'
+    docs: https://help.icontact.com/customers/s/article/Automations-iContact-API
+    methods: [POST]
+    note: >-
+      Write-only via the API — GET, PUT and DELETE are all documented as not
+      supported. An automation can be created but never read back.
+
+  - name: user
+    path: '/a/{accountId}/users/{userId}'
+    id: userId
+    docs: https://help.icontact.com/customers/s/article/Users-iContact-API
+    methods: [GET, POST, DELETE]
+    relationships:
+      - belongs_to: account
+      - has_one: permissions
+        via: 'URI nesting /users/{userId}/permissions'
+
+  - name: permissions
+    path: '/a/{accountId}/users/{userId}/permissions'
+    docs: https://help.icontact.com/customers/s/article/Permissions-iContact-API
+    methods: [GET, POST]
+    relationships:
+      - belongs_to: user
+      - scopes: clientFolder
+
+  - name: time
+    path: '/icp/time'
+    docs: https://help.icontact.com/customers/s/article/Time-iContact-API
+    methods: [GET]
+    auth_required: false
+    fields: [time, timestamp]
+    note: >-
+      The only unauthenticated resource. iContact's own reference lists its URI
+      as "Unsure at this time"; probed 2026-08-13, the working path is
+      GET https://app.icontact.com/icp/time (HTTP 200).
+
+entity_count: 24
+
+observations:
+  - >-
+    Contact-to-list is many-to-many through an explicit subscription join
+    entity. This is the single most common integration mistake against this
+    API: creating a contact does not put it on a list.
+  - >-
+    Engagement data (opens, clicks, bounces, unsubscribes, statistics) is
+    strictly poll-only and strictly per-message; there is no account-level
+    engagement feed and no engagement webhook.
+  - >-
+    Automations are create-only. There is no way to enumerate, verify or
+    remove an automation through the API.
+  - >-
+    No entity carries a hypermedia link, a self URI or an etag, so no
+    conditional request or optimistic-concurrency pattern is available.

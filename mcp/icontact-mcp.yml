@@ -1,0 +1,174 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  https://help.icontact.com/customers/s/article/Resource-Call-References-List-iContact-API
+  (candidate tools derived from the published REST resource reference)
+name: iContact MCP server
+api: icontact:rest-api
+status: candidate
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+  note: >-
+    iContact ships no MCP server, hosted or local. Probed 2026-08-13:
+    POST tools/list to https://mcp.icontact.com/mcp (403),
+    https://api.icontact.com/mcp (403), https://app.icontact.com/mcp (404) and
+    https://www.icontact.com/mcp (504) — none is an MCP endpoint. The official
+    MCP registry (registry.modelcontextprotocol.io) returns zero servers for
+    "icontact". No npm, PyPI or GitHub package named for an iContact MCP server
+    exists. The tools below are OUR candidate mapping of the published REST
+    surface; no endpoint URL is asserted because none exists.
+probes:
+  - url: https://mcp.icontact.com/mcp
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    http_status: 403
+    content_type: text/html
+  - url: https://api.icontact.com/mcp
+    method: POST
+    http_status: 403
+    content_type: text/html
+  - url: https://app.icontact.com/mcp
+    method: POST
+    http_status: 404
+  - url: https://www.icontact.com/mcp
+    method: POST
+    http_status: 504
+  - url: https://registry.modelcontextprotocol.io/v0/servers?search=icontact
+    method: GET
+    http_status: 200
+    result: '{"servers":[],"metadata":{"count":0}}'
+candidate_tools:
+  note: >-
+    Derived from the resources and methods iContact publishes in its own
+    reference. Each tool names the exact documented HTTP method and URI it
+    would wrap. Input schemas are NOT asserted: iContact publishes no
+    OpenAPI, so parameter types would have to be inferred from prose field
+    tables rather than read from a contract.
+  base_path: '/a/{accountId}/c/{clientFolderId}'
+  tools:
+    - name: get_server_time
+      rest: 'GET /icp/time'
+      auth_required: false
+      description: Return iContact server time (UTC) and UNIX epoch timestamp.
+    - name: list_accounts
+      rest: 'GET /icp/a/'
+      description: List accounts available to the credential.
+    - name: list_client_folders
+      rest: 'GET /icp/a/{accountId}/c/'
+      description: List client folders in an account.
+    - name: get_client_folder
+      rest: 'GET /a/{accountId}/c/{clientFolderId}'
+    - name: list_contacts
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/contacts'
+      description: >-
+        Search contacts. Supports limit, offset, orderby, per-field filters,
+        wildcard and comparison operators. Defaults to listed contacts only;
+        pass status=total for all, status=unlisted for unsubscribed-to-nothing.
+    - name: get_contact
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/contacts/{contactId}'
+    - name: create_contacts
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/contacts'
+      destructive: false
+      warning: >-
+        POST on the collection both creates AND updates. Omit contactId to
+        create.
+    - name: update_contact
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/contacts/{contactId}'
+      description: Merge-update — only supplied fields change.
+    - name: replace_contact
+      rest: 'PUT /a/{accountId}/c/{clientFolderId}/contacts/{contactId}'
+      destructive: true
+      warning: Deletes all data and stores only the supplied data.
+    - name: delete_contact
+      rest: 'DELETE /a/{accountId}/c/{clientFolderId}/contacts/{contactId}'
+      destructive: true
+    - name: get_contact_history
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/contacts/{contactId}/actions'
+    - name: list_lists
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/lists'
+    - name: create_lists
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/lists'
+    - name: delete_list
+      rest: 'DELETE /a/{accountId}/c/{clientFolderId}/lists/{listId}'
+      destructive: true
+    - name: list_subscriptions
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/subscriptions'
+    - name: subscribe_contact
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/subscriptions'
+      description: Associate a contact with a list. Required to put a contact on a list.
+    - name: move_subscription
+      rest: 'PUT /a/{accountId}/c/{clientFolderId}/subscriptions/{subscriptionId}'
+      requires_api_version: '2.2'
+    - name: list_segments
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/segments'
+    - name: create_segments
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/segments'
+    - name: list_segment_criteria
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/segments/{segmentId}/criteria'
+    - name: list_campaigns
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/campaigns'
+    - name: create_campaigns
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/campaigns'
+    - name: list_messages
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages'
+    - name: create_messages
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/messages'
+    - name: send_message
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/sends'
+      destructive: true
+      warning: >-
+        Dispatches real email to real contacts. There is no sandbox, no
+        dry-run and no idempotency key — a retry can double-send.
+    - name: get_message_statistics
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages/{messageId}/statistics'
+    - name: get_message_opens
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages/{messageId}/opens'
+    - name: get_message_clicks
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages/{messageId}/clicks'
+    - name: get_message_bounces
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages/{messageId}/bounces'
+    - name: get_message_unsubscribes
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/messages/{messageId}/unsubscribes'
+    - name: list_custom_fields
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/customfields'
+    - name: create_custom_fields
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/customfields'
+    - name: list_signup_forms
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/signupforms'
+    - name: create_upload
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/uploads'
+    - name: put_upload_data
+      rest: 'PUT /a/{accountId}/c/{clientFolderId}/uploads/{uploadId}/data'
+      description: 'Upload the file body. Accepted types: .csv, .xls, .xlsx.'
+    - name: list_webhooks
+      rest: 'GET /a/{accountId}/c/{clientFolderId}/webhooks'
+    - name: create_webhooks
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/webhooks'
+    - name: delete_webhook
+      rest: 'DELETE /a/{accountId}/c/{clientFolderId}/webhooks/{webhookId}'
+    - name: create_automation
+      rest: 'POST /a/{accountId}/c/{clientFolderId}/automations/{automationType}'
+    - name: list_users
+      rest: 'GET /a/{accountId}/users'
+    - name: get_user_permissions
+      rest: 'GET /a/{accountId}/users/{userId}/permissions'
+  tool_count: 40
+agent_safety_notes:
+  - >-
+    POST on a member is a partial update and PUT on a member is a destructive
+    replace. An agent that assumes REST-standard PUT semantics will silently
+    erase every field it does not send.
+  - >-
+    GET on contacts silently returns only 20 rows when limit is omitted, and
+    only list-subscribed contacts unless status=total is passed. Both defaults
+    will cause an agent to under-report.
+  - >-
+    The sends resource has no dry-run. There is no way to rehearse an email
+    campaign against this API.
+  - >-
+    No idempotency key exists, so no write is safe to retry blindly.

@@ -1,0 +1,59 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+docs: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+name: iContact REST API rate limits
+api: icontact:rest-api
+limit_count: 0
+limits: []
+published: false
+acknowledged: true
+acknowledgement_quote: >-
+  "mind the servers: if your API is making a lot of redundant requests, that's
+  a lot of unnecessary work for our servers - and that means you're slowed down
+  and everyone else is slowed down. Additionally, you become more likely to be
+  impacted by our rate limiting."
+acknowledgement_source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+response_headers: []
+status_on_exhaustion: null
+retry_after: false
+probes:
+  - probed: '2026-08-13'
+    url: https://app.icontact.com/icp/time
+    method: GET
+    http_status: 200
+    rate_limit_headers_observed: []
+    note: >-
+      Public unauthenticated endpoint. Response headers were date,
+      content-type, server, x-robots-tag, x-content-type-options,
+      cf-cache-status, strict-transport-security, cf-ray. No RateLimit-*,
+      X-RateLimit-* or Retry-After.
+  - probed: '2026-08-13'
+    url: https://app.icontact.com/icp/a/
+    method: GET
+    http_status: 401
+    rate_limit_headers_observed: []
+related_quotas:
+  note: >-
+    These are plan entitlements, not request-rate limits, but they are the only
+    published numeric ceilings an integration will hit.
+  source: https://www.icontact.com/pricing/
+  items:
+    - name: Send limit
+      values: '10x contacts (Standard), 12x contacts (Premium), 15x contacts (Ultimate)'
+    - name: Storage
+      values: '250 MB (Standard), 500 MB (Premium), 1 GB (Ultimate)'
+      related_error: HTTP 507 Insufficient Space
+    - name: Contact lists
+      values: '2 (Standard), unlimited (Premium/Ultimate)'
+    - name: Segments
+      values: '1 (Standard), unlimited (Premium/Ultimate)'
+    - name: Automations
+      values: '1 (Standard), unlimited (Premium/Ultimate)'
+note: >-
+  iContact confirms in its own developer documentation that rate limiting is
+  enforced but publishes no limit, no window, no burst allowance, no exhaustion
+  status code and no response header. The documented HTTP status code reference
+  lists no 429. An integrator therefore cannot know a limit exists until they
+  are throttled, and cannot detect throttling from a header at runtime. This is
+  an honest zero: the limit is real, the number is unpublished.

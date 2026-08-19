@@ -1,0 +1,89 @@
+generated: '2026-08-13'
+method: probed
+source: live probes of every host in apis.yml plus the docs host
+name: iContact /.well-known probe
+hits: 0
+result: none
+note: >-
+  Every /.well-known path was probed on all three iContact hosts on
+  2026-08-13. Nothing was served. No apis.yml WellKnown or SecurityTxt pointer
+  is emitted, because none of these paths returned a document. This file
+  records a verified absence, not a presence.
+hosts:
+  - host: www.icontact.com
+    paths:
+      - path: /.well-known/security.txt
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        content_type: text/html
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        content_type: text/html
+        file: null
+  - host: app.icontact.com
+    note: The API host.
+    paths:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: help.icontact.com
+    note: >-
+      The documentation host, a Salesforce Experience Cloud community. All
+      /.well-known requests are rewritten under /customers/ and answered 401.
+    paths:
+      - path: /.well-known/security.txt
+        status: 401
+        effective_url: https://help.icontact.com/customers/.well-known/security.txt
+        file: null
+      - path: /llms.txt
+        status: 401
+        effective_url: https://help.icontact.com/customers/llms.txt
+        file: null
+related_probes:
+  - url: https://www.icontact.com/llms.txt
+    status: 404
+  - url: https://www.icontact.com/robots.txt
+    status: 200
+    note: >-
+      Served. Notable finding: robots.txt contains an explicit
+      "User-agent: GPTBot / Disallow: /" block, so iContact denies at least one
+      named AI crawler at the root while publishing no llms.txt and no agent
+      surface of any kind.

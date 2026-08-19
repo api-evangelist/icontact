@@ -1,0 +1,125 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/HTTP-Status-Codes-iContact-API
+docs: https://help.icontact.com/customers/s/article/HTTP-Status-Codes-iContact-API
+name: iContact REST API error catalog
+api: icontact:rest-api
+format: custom
+rfc9457: false
+content_type: application/json
+envelope:
+  shape:
+    errors: array of human-readable strings
+    warnings: array of human-readable strings
+  example: '{"errors":["Api username invalid"]}'
+  machine_readable_code: false
+  type_uri: false
+  field_pointer: false
+  note: >-
+    There is no error code, no type URI and no field pointer — an integrator
+    must string-match the prose message. Warnings are returned alongside a
+    successful body and are not fatal; the first-party PHP libraries collect
+    them separately from errors.
+observed:
+  - probed: '2026-08-13'
+    url: https://app.icontact.com/icp/a/
+    http_status: 401
+    body: '{"errors":["Api username invalid"]}'
+    note: Anonymous and placeholder-credential requests return the same body.
+problem_types:
+  - status: 200
+    title: OK
+    detail: Your request was processed successfully.
+    note: >-
+      Not an error; listed because a 200 may still carry a warnings array that
+      an integrator must inspect.
+  - status: 400
+    title: Bad Request
+    detail: Your data could not be parsed, or your request contained invalid data.
+    remediation: >-
+      Validate the payload against the resource's published field table.
+      Check that primary key fields are omitted on a creation POST and supplied
+      on a POST-update or PUT, and that required fields are present on PUT.
+  - status: 401
+    title: Not Authorized
+    detail: You are not logged in.
+    remediation: >-
+      Send all of API-AppId, API-Username and API-Password. The API-Password is
+      the application password set at integration registration, not the
+      iContact account login password. For a third-party application, the
+      account owner must first enable the API-AppId at
+      https://app.icontact.com/icp/core/externallogin.
+    retryable: false
+  - status: 402
+    title: Payment Required
+    detail: You must pay your iContact bill before we can process your request.
+    remediation: >-
+      Billing state, not an API fault. An integration will hard-fail on an
+      unpaid account with no other signal.
+    retryable: false
+  - status: 403
+    title: Forbidden
+    detail: You are logged in, but do not have permission to perform that action.
+    remediation: >-
+      Check the user's per-client-folder permissions. Most resources also note
+      that on an Agency account the caller must be the agency admin.
+    retryable: false
+  - status: 404
+    title: Not Found
+    detail: You have requested a resource that cannot be found.
+    remediation: Verify accountId, clientFolderId and the member id in the URI.
+  - status: 405
+    title: Method Not Allowed
+    detail: You cannot perform that method on the requested resource.
+    remediation: >-
+      Method support varies per resource and per scope (collection vs member).
+      Consult the method table on that resource's reference article; many
+      combinations are documented as "Not supported".
+  - status: 406
+    title: Not Acceptable
+    detail: >-
+      You have requested that iContact generate data in an unsupported format.
+      The iContact API can only return data in XML or JSON.
+    remediation: 'Set Accept to application/json or text/xml.'
+  - status: 415
+    title: Unsupported Media Type
+    detail: Your request was not in a supported format. Requests may be XML or JSON.
+    remediation: 'Set Content-Type to application/json or text/xml.'
+  - status: 500
+    title: Internal Server Error
+    detail: An error occurred in iContact's code.
+    retryable: true
+    remediation: >-
+      Retry with backoff. Note that the API publishes no idempotency key, so a
+      retry of a create POST may duplicate the resource.
+  - status: 501
+    title: Not Implemented
+    detail: >-
+      You have requested a resource that has not been implemented, or you have
+      specified an incorrect version of the iContact API.
+    remediation: >-
+      Most commonly an unrecognized API-Version header. Documented accepted
+      values are 2.0, 2.1 and 2.2.
+  - status: 503
+    title: Service Unavailable
+    detail: >-
+      The system is experiencing extremely high traffic, or is down for
+      maintenance.
+    retryable: true
+    remediation: >-
+      Retry with backoff. Check https://status.icontact.com/ — the status page
+      publishes an "API System" component.
+  - status: 507
+    title: Insufficient Space
+    detail: >-
+      You have used up all of your allotted storage (for example, in the image
+      library).
+    retryable: false
+    remediation: >-
+      Plan-level storage quota is exhausted. Storage is tiered by plan
+      (250 MB / 500 MB / 1 GB) — see plans/icontact-plans-pricing.yml.
+gaps:
+  - No 429 is documented, despite the docs acknowledging that rate limiting exists.
+  - No Retry-After is documented on 503 or on any throttled response.
+  - No stable machine-readable error code; callers must parse prose strings.
+  - No RFC 9457 application/problem+json representation.

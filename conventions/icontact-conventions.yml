@@ -1,0 +1,180 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+docs:
+  - https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+  - https://help.icontact.com/customers/s/article/API-Getting-Started-Guide
+  - https://help.icontact.com/customers/s/article/HTTP-Status-Codes-iContact-API
+name: iContact REST API cross-cutting conventions
+api: icontact:rest-api
+base_url: https://app.icontact.com/icp
+
+auth:
+  style: custom-headers
+  headers: [API-AppId, API-Username, API-Password, API-Version]
+  detail: authentication/icontact-authentication.yml
+
+versioning:
+  style: request-header
+  header: API-Version
+  values: ['2.0', '2.1', '2.2']
+  current: '2.2'
+  in_url: false
+  note: >-
+    Version is negotiated per request via the API-Version header, never in the
+    path. An unrecognized version is documented to return 501 Not Implemented.
+    Some behaviour is version-gated: PUT on a single subscription (move a
+    contact to another list) is documented as requiring API version 2.2.
+  detail: lifecycle/icontact-lifecycle.yml
+
+content_negotiation:
+  request_header: Content-Type
+  response_header: Accept
+  formats: [application/json, text/xml]
+  default: none
+  note: >-
+    Both representations are first-class; the reference publishes an XML and a
+    JSON example for every resource. Webhook callbacks are JSON only.
+
+pagination:
+  style: limit-offset
+  params:
+    limit:
+      in: query
+      type: integer
+      default: 20
+      note: >-
+        Documented default is 20 for ALL GET requests when limit is omitted —
+        a silent truncation an integrator must handle explicitly.
+      max: null
+      max_note: No maximum limit is published.
+    offset:
+      in: query
+      type: integer
+      default: 0
+  response_fields: [limit, offset, total]
+  response_note: >-
+    Collection responses carry sibling limit, offset and total members
+    alongside the resource array, so total record count is available without a
+    second call.
+  cursor: false
+  link_header: false
+  example: GET /a/{accountId}/c/{clientFolderId}/contacts?limit=25&offset=50
+
+sorting:
+  param: orderby
+  style: comma-separated field list with per-field direction suffix
+  direction_suffix: ['(:asc)', ':desc']
+  default_direction: asc
+  example: '?orderby=lastName:desc,firstName'
+
+filtering:
+  style: query-parameter-per-field
+  multi_value: comma-separated values on supported resources
+  wildcard:
+    supported: true
+    token: '*'
+    example: '?email=j*'
+  operators:
+    param_suffix: SearchType
+    usage: '?{field}={value}&{field}SearchType={op}'
+    default: eq
+    values:
+      eq: equals (default)
+      gt: greater than
+      gte: greater than or equal
+      lt: less than
+      lte: less than or equal
+      bet: inclusive between; requires two comma-separated values
+  case_sensitivity: >-
+    Field names are case sensitive — the docs call out that listId works and
+    listID does not.
+  empty_value_behavior: >-
+    A search term supplied with no value (e.g. listId=) returns no rows rather
+    than being ignored.
+
+timestamps:
+  format: ISO 8601
+  pattern: 'YYYY-MM-DD[THH:MM:SS[±HH:MM]]'
+  note: Time and timezone offset are optional; date-only values are accepted.
+  server_time_endpoint: GET /icp/time
+
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    iContact publishes no idempotency key, no request-replay window and no
+    retry-safety guidance. POST on a collection is overloaded to mean both
+    create and update ("Create new contacts(s) or modify the data fields for
+    existing contacts"), and PUT on a single resource is destructive replace
+    ("Deletes all data and stores supplied data"). A retried POST after a
+    network timeout has no documented deduplication behaviour. Absence
+    verified against the full published reference on 2026-08-13.
+
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or correlation header is documented, and none was observed
+    on live probes. Responses carry only Cloudflare's cf-ray, which is edge
+    infrastructure and not an iContact-supported support identifier.
+
+error_envelope:
+  format: custom
+  rfc9457: false
+  content_type: application/json
+  shape:
+    errors: array of human-readable strings
+    warnings: array of human-readable strings
+  example: '{"errors":["Api username invalid"]}'
+  observed: '2026-08-13 on GET https://app.icontact.com/icp/a/ (HTTP 401)'
+  note: >-
+    Errors are prose strings with no machine-readable code, type URI or field
+    pointer. Warnings are returned alongside a successful response body.
+  detail: errors/icontact-problem-types.yml
+
+rate_limit_signaling:
+  headers: []
+  status_on_exhaustion: null
+  note: >-
+    The docs acknowledge rate limiting exists ("you become more likely to be
+    impacted by our rate limiting") but publish no limit, no window and no
+    response header. No RateLimit-*, X-RateLimit-* or Retry-After header was
+    observed on a live 200 or 401 on 2026-08-13.
+  detail: rate-limits/icontact-rate-limits.yml
+
+field_expansion:
+  supported: false
+  sparse_fieldsets: false
+
+metadata:
+  style: custom-fields resource
+  note: >-
+    Arbitrary key/value metadata on a contact is modelled as a first-class
+    customfields resource rather than a metadata object on the contact.
+  docs: https://help.icontact.com/customers/s/article/Custom-Fields-iContact-API
+
+field_conventions:
+  naming: lowerCamelCase
+  primary_keys: '{resource}Id (contactId, listId, messageId, segmentId, webhookId, userId)'
+  primary_key_rule: >-
+    Primary key fields must be supplied on POST-update and PUT, must NOT be
+    supplied on a creation POST, and can never be modified.
+  field_classes: [primary key, required, optional, receive-only]
+  note: >-
+    Every resource article classifies each field into exactly one of those four
+    classes, which is unusually explicit for an API of this age.
+
+method_semantics:
+  collection:
+    POST: create and/or update one or more members; returns resource locations
+    PUT: 'generally not supported on collections (exception: uploads)'
+    DELETE: not supported on collections
+  member:
+    GET: read
+    POST: partial update (merge supplied fields only)
+    PUT: destructive replace — deletes all data, stores supplied data
+    DELETE: delete, where supported
+  note: >-
+    POST-as-partial-update and PUT-as-destructive-replace inverts the
+    convention most agents assume. This is the single most dangerous
+    convention on this API for an autonomous caller.

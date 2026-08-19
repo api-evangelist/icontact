@@ -1,0 +1,50 @@
+generated: '2026-08-13'
+method: probed
+source: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+name: iContact REST API changelog
+api: icontact:rest-api
+published: false
+scheme: null
+current_version: '2.2'
+entries: []
+entry_count: 0
+finding: >-
+  iContact advertises an API changelog it does not serve. The Advanced Users
+  reference article lists "API Version Changelog" as the last item in its own
+  table of contents, and the anchor link is present, but the rendered article
+  body ends after the "Coding Best Practices" section. No changelog content
+  exists on the page.
+evidence:
+  - probed: '2026-08-13'
+    url: https://help.icontact.com/customers/s/article/Advanced-Users-iContact-API
+    http_status: 200
+    note: >-
+      Fetched and text-extracted; "API Version Changelog" appears once, in the
+      Contents list, with no corresponding section body.
+  - probed: '2026-08-13'
+    url: https://status.icontact.com/history.rss
+    http_status: 200
+    note: >-
+      Incident history feed. This is an operational incident log, not a product
+      or API changelog, and is recorded in lifecycle/icontact-lifecycle.yml.
+version_history_known:
+  note: >-
+    The only version history iContact publishes is the set of values the
+    API-Version header accepts. No release dates, no breaking-change notes and
+    no additions are published for any of them.
+  versions:
+    - version: '2.0'
+      date: null
+      status: accepted
+    - version: '2.1'
+      date: null
+      status: accepted
+    - version: '2.2'
+      date: null
+      status: current
+      known_additions:
+        - >-
+          PUT on a single subscription (move a contact to another list) is
+          documented as requiring API version 2.2. This is the only
+          version-attributed behaviour change published anywhere in the
+          reference.

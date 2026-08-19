@@ -1,0 +1,194 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  https://api.github.com/orgs/icontact/repos (first-party), plus
+  registry.npmjs.org, repo.packagist.org, rubygems.org, pypi.org and
+  crates.io searches for "icontact"
+name: iContact client libraries and SDKs
+api: icontact:rest-api
+official_count: 3
+official_registry_published_count: 0
+third_party_count: 5
+summary: >-
+  iContact publishes three first-party PHP client libraries on GitHub and
+  nothing else. None of the three is published to Packagist or any other
+  package registry, none carries a git tag or a GitHub release, and the most
+  recently touched of them was last pushed in March 2018 — more than eight
+  years ago. There is no first-party JavaScript, Python, Ruby, Java, Go, .NET
+  or CLI client. Every registry-installable iContact client in existence is
+  third-party.
+packages:
+  - name: icontact-api-php
+    language: PHP
+    official: true
+    registry: github
+    registry_note: >-
+      Not published to Packagist. There is no `composer require` target; the
+      library is consumed by cloning the repo or vendoring lib/iContactApi.php.
+    url: https://github.com/icontact/icontact-api-php
+    install: 'git clone https://github.com/icontact/icontact-api-php'
+    version: null
+    version_note: >-
+      No version exists to record. Zero git tags, zero GitHub releases, no
+      composer.json, no version constant in the source. Checked
+      2026-08-13 via api.github.com/repos/icontact/icontact-api-php/tags and
+      /releases — both returned empty arrays.
+    published: null
+    published_note: >-
+      No release date exists. Last commit pushed 2018-01-02; repository created
+      2012-07-26.
+    last_push: '2018-01-02'
+    license: Apache-2.0
+    stars: 19
+    archived: false
+    api_version_default: '2.2'
+    base_url_default: https://app.icontact.com/icp
+    sandbox_url_default: https://app.sandbox.icontact.com/icp
+    covers:
+      - contacts
+      - lists
+      - messages
+      - sends
+      - subscriptions
+      - campaigns
+      - uploads
+      - message opens
+      - accounts
+      - client folders
+    note: >-
+      This is the reference implementation of the header authentication scheme
+      (Api-Version, Api-AppId, Api-Username, Api-Password) and of the
+      limit/offset/orderby query conventions. It also hard-codes
+      CURLOPT_SSL_VERIFYPEER = false, disabling TLS certificate verification —
+      a defect in the provider's own published sample code, unchanged since
+      2018.
+
+  - name: icontact-pro-api-php
+    language: PHP
+    official: true
+    registry: github
+    registry_note: Not published to Packagist.
+    url: https://github.com/icontact/icontact-pro-api-php
+    install: 'git clone https://github.com/icontact/icontact-pro-api-php'
+    version: null
+    version_note: >-
+      No version exists. Zero tags, zero releases, no composer.json. Checked
+      2026-08-13.
+    published: null
+    last_push: '2018-03-12'
+    license: Apache-2.0
+    stars: 1
+    archived: false
+    api_version_default: '2.2'
+    base_url_default: https://api.icpro.co/icp
+    status: orphaned
+    status_note: >-
+      The API host this library targets, api.icpro.co, has no DNS record as of
+      2026-08-13 (NXDOMAIN via 8.8.8.8). The library is unusable as published.
+
+  - name: icontact-pro-select-api-php
+    language: PHP
+    official: true
+    registry: github
+    registry_note: Not published to Packagist.
+    url: https://github.com/icontact/icontact-pro-select-api-php
+    install: 'git clone https://github.com/icontact/icontact-pro-select-api-php'
+    version: null
+    version_note: >-
+      No version exists. Zero tags, zero releases, no composer.json. Checked
+      2026-08-13.
+    published: null
+    last_push: '2014-10-28'
+    license: Apache-2.0
+    stars: 1
+    archived: false
+    api_version_default: '2.2'
+    base_url_default: https://api.omkt.co/icp
+    class_name: OutMarketApi
+    status: orphaned
+    status_note: >-
+      Targets the OutMarket-branded API at api.omkt.co. Probed 2026-08-13: the
+      host resolves and completes a TLS handshake but never returns an HTTP
+      response. Last touched 2014.
+
+third_party:
+  note: >-
+    Recorded for completeness and to show where the ecosystem actually gets its
+    clients. None is maintained or endorsed by iContact.
+  packages:
+    - name: mizanur/icontact-api-php
+      language: PHP
+      registry: packagist
+      official: false
+      url: https://packagist.org/packages/mizanur/icontact-api-php
+      repository: https://github.com/mizan3008/icontact-php-api
+      version: v2.2
+      published: '2017-04-19'
+      downloads: 57624
+      note: >-
+        The most-installed iContact client anywhere, by a wide margin, and it
+        is not iContact's.
+    - name: icontact-api
+      language: JavaScript
+      registry: npm
+      official: false
+      url: https://www.npmjs.com/package/icontact-api
+      repository: https://github.com/move-zig/icontact-api
+      version: 0.3.1
+      published: '2020-12-08'
+    - name: '@pipedream/icontact'
+      language: JavaScript
+      registry: npm
+      official: false
+      url: https://www.npmjs.com/package/@pipedream/icontact
+      version: 0.3.0
+      published: '2026-05-29'
+      note: >-
+        Pipedream's integration component. The only iContact client with a
+        release in the last five years, and it belongs to an integration
+        platform, not to iContact.
+    - name: icontact
+      language: Ruby
+      registry: rubygems
+      official: false
+      url: https://rubygems.org/gems/icontact
+      repository: https://github.com/l1h3r/icontact
+      version: 0.0.5
+      published: '2014-12-03'
+    - name: icontact-api
+      language: Ruby
+      registry: rubygems
+      official: false
+      url: https://rubygems.org/gems/icontact-api
+      repository: https://github.com/olbrich/IContact-API
+      version: 0.3.1
+      published: '2012-08-24'
+
+registries_checked:
+  - registry: npm
+    result: no first-party package
+  - registry: PyPI
+    result: 'no package — icontact, python-icontact and icontact-api all 404'
+  - registry: Packagist
+    result: >-
+      no first-party package; the packagist vendor namespace "icontact"
+      belongs to a different organisation (icontact/booxtreamclient resolves
+      to github.com/BooXtream/php-BooXtreamClient) and is NOT this company
+  - registry: RubyGems
+    result: no first-party gem
+  - registry: crates.io
+    result: no package
+  - registry: NuGet
+    result: no package
+  - registry: Maven Central
+    result: no package
+  - registry: pkg.go.dev
+    result: no module
+
+decay_signal:
+  finding: >-
+    Every first-party client library predates the current API documentation
+    set. The newest first-party commit is 2018-03-12; two of the three target
+    API hosts that no longer answer. An integrator arriving today can install
+    nothing from a registry that iContact wrote.
+  years_since_newest_official_release: 8

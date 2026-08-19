@@ -1,0 +1,111 @@
+generated: '2026-08-13'
+method: searched
+source: https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API
+docs: https://help.icontact.com/customers/s/article/Web-Hooks-iContact-API
+name: iContact webhook catalog
+api: icontact:rest-api
+surface: webhooks
+transport: HTTP POST callback
+payload_format: application/json
+payload_note: >-
+  "All web hooks are called in JSON format" — the webhook surface is JSON only,
+  unlike the REST API which also serves XML.
+summary: >-
+  iContact publishes a real, managed webhook surface: subscriptions are created
+  and deleted through a first-class REST resource, and four contact-lifecycle
+  events are documented with their callback payload shapes. It is a narrow
+  catalog — nothing about messages, sends, bounces or campaigns is available as
+  an event — and it has no delivery guarantees, no signature and no retry
+  policy.
+management_api:
+  collection:
+    uri: 'https://app.icontact.com/icp/a/{accountId}/c/{clientFolderId}/webhooks'
+    methods:
+      GET: Returns set containing all web hooks in the client folder
+      POST: Create new web hook(s)
+      PUT: Not supported
+      DELETE: Not supported
+  member:
+    uri: 'https://app.icontact.com/icp/a/{accountId}/c/{clientFolderId}/webhooks/{webhookId}'
+    methods:
+      GET: Returns data for one web hook
+      DELETE: Unsubscribe from a web hook
+      POST: Not supported
+      PUT: Not supported
+  fields:
+    - name: webhookId
+      type: integer
+      role: primary key
+      description: Uniquely identifies a web hook within the system.
+      example: 5
+      note: Must not be supplied on a creation POST.
+    - name: eventId
+      type: string
+      role: required
+      description: The event which will notify the url.
+      example: contact_updated
+    - name: url
+      type: string
+      role: required
+      description: The url that will be notified when the event happens.
+  access_note: >-
+    "If you have an Agency account, you must be the admin on an iContact Agency
+    account to use this resource."
+event_count: 4
+events:
+  - id: contact_updated
+    description: When an existing contact is modified.
+    payload_shape: '[{"contact": {contact_data}}]'
+    entities: [contact]
+  - id: contact_created
+    description: When a new contact is created.
+    payload_shape: '[{"contact": {contact_data}}]'
+    entities: [contact]
+  - id: contact_subscribed
+    description: When a contact is subscribed to a list.
+    payload_shape: '[{"contact": {contact_data}, "list": {list_data}}]'
+    entities: [contact, list]
+  - id: contact_unsubscribed
+    description: When a contact is unsubscribed from a list.
+    payload_shape: '[{"contact": {contact_data}, "list": {list_data}}]'
+    entities: [contact, list]
+payload_contract:
+  note: >-
+    "The data format will be the same as the data format for the object on the
+    public API for cohesiveness." Event bodies therefore reuse the contact and
+    list field tables from the REST reference — see
+    data-model/icontact-data-model.yml.
+  contact_fields_source: https://help.icontact.com/customers/s/article/Contacts-iContact-API
+  list_fields_source: https://help.icontact.com/customers/s/article/Lists-iContact-API
+documented_limitations:
+  - >-
+    "NOTICE: You can only see 'unsubscribe' events. There is not a way to
+    monitor for 'Do Not Contact' events." A contact moving to donotcontact
+    status is invisible to webhook consumers — a material compliance gap for
+    anyone syncing suppression state into another system.
+gaps:
+  signature_verification: false
+  signature_note: >-
+    No HMAC signature, no shared secret, no signing header is documented. A
+    receiver cannot verify a callback came from iContact.
+  retry_policy: false
+  retry_note: No retry, backoff or dead-letter behaviour is documented.
+  delivery_guarantee: null
+  ordering_guarantee: null
+  replay: false
+  expected_response: null
+  expected_response_note: >-
+    The docs do not say what status code a receiver must return, or what
+    happens if it returns an error.
+  ip_allowlist: false
+  event_id_or_timestamp_in_payload: false
+  asyncapi_published: false
+  asyncapi_note: >-
+    iContact publishes no AsyncAPI, CloudEvents or event-schema document.
+    asyncapi/icontact-webhooks-asyncapi.yml in this repo is API Evangelist's
+    derivation of this catalog, not a provider artifact.
+  message_level_events: false
+  message_level_note: >-
+    There are no send, delivery, bounce, open, click or complaint events. All
+    message engagement data is poll-only, via the statistics, opens, clicks,
+    bounces and unsubscribes sub-resources.
