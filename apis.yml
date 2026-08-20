@@ -26,6 +26,16 @@ tags:
   - Marketing Automation
   - Campaigns
   - Contacts
+  - List
+  - Segments
+  - Webhook
+  - Email Deliverability
+  - SMB
+tags_raw:
+  - Email Marketing
+  - Marketing Automation
+  - Campaigns
+  - Contacts
   - Lists
   - Segments
   - Webhooks
@@ -47,6 +57,14 @@ apis:
     humanURL: https://help.icontact.com/customers/s/article/API-Developer-Portal
     baseURL: https://app.icontact.com/icp/
     tags:
+      - Email Marketing
+      - Campaigns
+      - Contacts
+      - List
+      - Message
+      - Webhook
+      - Segments
+    tags_raw:
       - Email Marketing
       - Campaigns
       - Contacts
