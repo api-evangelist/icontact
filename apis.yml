@@ -126,6 +126,8 @@ apis:
         url: https://apitracker.io/a/icontact
 
 common:
+  - type: RateLimits
+    url: rate-limits/icontact-rate-limits.yml
   - type: DomainSecurity
     url: security/icontact-domain-security.yml
   - type: GitHubOrganization
