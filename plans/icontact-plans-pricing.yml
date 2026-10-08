@@ -157,3 +157,34 @@ add_ons:
     price_from: 1
     period: month
     note: Included at no extra cost on Ultimate.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - negotiated
+  units: []
+  plans:
+  - name: Standard
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Premium
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Ultimate
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Custom / Enterprise
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
